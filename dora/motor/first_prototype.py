@@ -5,7 +5,7 @@ def turn_on_motor(pin, go):
     GPIO.output(pin, go)
     return
 
-# gpio: 4, 17, 27, 22, 5, 6, 13, 19, 26, 16, 20, 21
+# gpio: 4
 pins = [7]
 GPIO.setmode(GPIO.BOARD)
 for pin in pins:
