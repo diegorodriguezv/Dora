@@ -22,6 +22,7 @@ class Dora(object):
         increment = 20
         try:
             while 1:
+                print "stop = Z  faster = Q  slower = A  full = W  exit = X"
                 inp = raw_input().strip().upper()
                 if inp == "Q":
                     self.motor.set_throttle(self.motor.throttle + increment)
@@ -29,9 +30,11 @@ class Dora(object):
                     self.motor.set_throttle(self.motor.throttle - increment)
                 elif inp == "Z":
                     self.motor.set_throttle(0)
-                elif inp == "S":
+                elif inp == "W":
+                    self.motor.set_throttle(0)
+                elif inp == "X":
                     break
-                print "per: {} thr: {}".format(self.motor.period, self.motor.throttle)
+                print "period: {} throttle: {}".format(self.motor.period, self.motor.throttle)
         except Exception as exc:
             print "Error: in tui_thread - {0}".format(exc)
             traceback.print_exc()
