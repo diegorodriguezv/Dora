@@ -32,7 +32,7 @@ class Dora(object):
                 elif inp == "Z":
                     self.motor.set_throttle(0)
                 elif inp == "W":
-                    self.motor.set_throttle(0)
+                    self.motor.set_throttle(100)
                 elif inp == "X":
                     break
                 print "period: {} throttle: {}".format(self.motor.period, self.motor.throttle)
