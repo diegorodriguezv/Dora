@@ -10,8 +10,7 @@ class Dora(object):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
-        self.motor = motor.relaymotor.RelayMotor(self.motor_on, self.motor_off)
-
+        self.motor = motor.relaymotor.RelayMotor(self.motor_on, self.motor_off, 1)
 
     def motor_on(self):
         GPIO.output(self.pin, True)
