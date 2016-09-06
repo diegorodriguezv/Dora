@@ -15,9 +15,11 @@ class Dora(object):
 
     def motor_on(self):
         GPIO.output(self.pin, True)
+        pass
 
     def motor_off(self):
         GPIO.output(self.pin, False)
+        pass
 
     def tui_thread(self):
         increment = 2

@@ -1,9 +1,11 @@
-import thread
+import threading
 import time
 import traceback
+import thread
 
 
 class RelayMotor(object):
+    lock = threading.Lock()
 
     def __init__(self, on_func, off_func, period=0.1):
         self.on_func = on_func
@@ -22,7 +24,8 @@ class RelayMotor(object):
                     time.sleep(self.period)
                 else:
                     self.on_func()
-                    active_period = self.throttle * self.period
+                    with self.lock:
+                        active_period = self.throttle * self.period
                     time.sleep(active_period)
                     self.off_func()
                     time.sleep(self.period - active_period)
@@ -31,10 +34,11 @@ class RelayMotor(object):
             traceback.print_exc()
 
     def set_throttle(self, throttle):
-        if throttle < 0 or throttle > 100:
-            print "Error: Invalid throttle value"
-            return
-        self.throttle = throttle
+        with self.lock:
+            if throttle < 0 or throttle > 100:
+                print "Error: Invalid throttle value"
+                return
+            self.throttle = throttle
 
 
 
