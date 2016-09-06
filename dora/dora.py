@@ -10,7 +10,7 @@ class Dora(object):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
-        self.motor = motor.relaymotor.RelayMotor(self.motor_on, self.motor_off)
+        self.motor = motor.relaymotor.RelayMotor(self.motor_on, self.motor_off, 1)
 
 
     def motor_on(self):
@@ -30,6 +30,8 @@ class Dora(object):
                     self.motor.set_throttle(self.motor.throttle - increment)
                 elif inp == "Z":
                     self.motor.set_throttle(0)
+                elif inp == "S":
+                    break
                 print "per: {} thr: {}".format(self.motor.period, self.motor.throttle)
         except Exception as exc:
             print "Error: in tui_thread - {0}".format(exc)
@@ -38,3 +40,4 @@ class Dora(object):
 
 if __name__ == "__main__":
     Dora().tui_thread()
+    print "Bye!"
