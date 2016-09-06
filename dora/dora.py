@@ -7,6 +7,7 @@ class Dora(object):
     pin = 7
 
     def __init__(self):
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
