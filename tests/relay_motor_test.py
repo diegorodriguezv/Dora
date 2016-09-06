@@ -19,7 +19,7 @@ class TestRelayMotor(unittest.TestCase):
         self.off += 1
 
     def test_init(self):
-        # self.assertEqual(self.motor.throttle,  0)
+        self.assertEqual(self.motor.throttle,  0)
         time.sleep(2)
         self.assertEqual(self.on,  0)
         self.assertEqual(self.off,  0)
