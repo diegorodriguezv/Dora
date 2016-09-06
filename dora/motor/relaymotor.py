@@ -24,8 +24,7 @@ class RelayMotor(object):
                     time.sleep(self.period)
                 else:
                     self.on_func()
-                    with self.lock:
-                        active_period = self.throttle * self.period
+                    active_period = self.throttle * self.period
                     time.sleep(active_period)
                     self.off_func()
                     time.sleep(self.period - active_period)
@@ -35,12 +34,7 @@ class RelayMotor(object):
 
     def set_throttle(self, throttle):
         with self.lock:
-            if throttle < 0 or throttle > 100:
+            if throttle < 0 or throttle > 1:
                 print "Error: Invalid throttle value"
                 return
             self.throttle = throttle
-
-
-
-
-
