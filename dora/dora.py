@@ -20,7 +20,7 @@ class Dora(object):
         GPIO.output(self.pin, False)
 
     def tui_thread(self):
-        increment = 20
+        increment = 2
         try:
             while 1:
                 print "stop = Z  faster = Q  slower = A  full = W  exit = X"
