@@ -29,8 +29,11 @@ class Dora(object):
                     self.motor.set_throttle(self.motor.throttle - increment)
                 elif inp == "Z":
                     self.motor.set_throttle(0)
-                elif inp == "S":
+                elif inp == "W":
+                    self.motor.set_throttle(0)
+                elif inp == "X":
                     break
+                print "stop = Z  faster = Q  slower = A  full = W  exit = X".format(self.motor.period, self.motor.throttle)
                 print "per: {} thr: {}".format(self.motor.period, self.motor.throttle)
         except Exception as exc:
             print "Error: in tui_thread - {0}".format(exc)

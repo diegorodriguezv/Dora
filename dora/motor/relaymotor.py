@@ -12,7 +12,6 @@ class RelayMotor(object):
         self.throttle = 0.0
         try:
             thread.start_new_thread(self.control_thread, ())
-            # pass
         except Exception as exc:
             print "Error: unable to start thread - {0}".format(exc)
 
