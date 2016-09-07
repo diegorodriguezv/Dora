@@ -1,11 +1,11 @@
 import threading
 import time
 import traceback
-import thread
 
 
 class RelayMotor(object):
     lock = threading.Lock()
+    alive = True
 
     def __init__(self, on_func, off_func, period=0.1):
         self.on_func = on_func
@@ -13,13 +13,14 @@ class RelayMotor(object):
         self.period = float(period)
         self.throttle = 0.0
         try:
-            thread.start_new_thread(self.control_thread, ())
+            self.control_thread = threading.Thread(target=self.control_func)
+            self.control_thread.start()
         except Exception as exc:
             print "Error: unable to start thread - {0}".format(exc)
 
-    def control_thread(self):
+    def control_func(self):
         try:
-            while 1:
+            while self.alive:
                 if self.throttle == 0:
                     time.sleep(self.period)
                 else:
