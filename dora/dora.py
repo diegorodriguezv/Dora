@@ -12,7 +12,7 @@ import motor.relaymotor
 
 class Dora(object):
     pin = 7
-    pingAlive = True
+    alive = True
     last_input = time.time()
 
     def __init__(self):
@@ -27,7 +27,7 @@ class Dora(object):
 
     def terminate(self):
         self.motor.alive = False
-        self.pingAlive = False
+        self.alive = False
         self.motor.control_thread.join()
         self.signal_off()
         print "Bye!"
@@ -82,15 +82,15 @@ class Dora(object):
         return response
 
     def ping_func(self):
-        while self.pingAlive:
+        while self.alive:
             if self.check_ping_error():
                 self.motor.set_throttle(0)
             else:
                 pass
 
     def timeout_func(self):
-        timeout = 3
-        while self.pingAlive:
+        timeout = 10
+        while self.alive:
             if time.time() - self.last_input > timeout:
                 self.motor.set_throttle(0)
             else:
