@@ -5,12 +5,15 @@ import traceback
 import subprocess
 
 import RPi.GPIO as GPIO
+import time
+
 import motor.relaymotor
 
 
 class Dora(object):
     pin = 7
     pingAlive = True
+    last_input = time.time()
 
     def __init__(self):
         self.setup()
@@ -19,6 +22,8 @@ class Dora(object):
         self.tui_thread.start()
         self.ping_thread = threading.Thread(target=self.ping_func)
         self.ping_thread.start()
+        self.timeout_thread = threading.Thread(target=self.timeout_func)
+        self.timeout_thread.start()
 
     def terminate(self):
         self.motor.alive = False
@@ -49,6 +54,7 @@ class Dora(object):
             while 1:
                 print "stop = Z  faster = Q  slower = A  full = W  exit = X"
                 inp = raw_input().strip().upper()
+                self.last_input = time.time()
                 if inp == "Q":
                     self.motor.set_throttle(self.motor.throttle + increment)
                 elif inp == "A":
@@ -65,8 +71,8 @@ class Dora(object):
             traceback.print_exc()
 
     def check_ping_error(self):
-        hostname = "8.8.8.8"
-        # hostname = "192.168.1.171"
+        # hostname = "8.8.8.8"
+        hostname = "192.168.1.171"
         response = False
         FNULL = open(os.devnull, 'w')
         if os.name == "nt":
@@ -78,10 +84,16 @@ class Dora(object):
     def ping_func(self):
         while self.pingAlive:
             if self.check_ping_error():
-                # print "Error: Lost connection"
                 self.motor.set_throttle(0)
             else:
-                # print "Connection active"
+                pass
+
+    def timeout_func(self):
+        timeout = 3
+        while self.pingAlive:
+            if self.last_input - time.time() < timeout:
+                self.motor.set_throttle(0)
+            else:
                 pass
 
 
