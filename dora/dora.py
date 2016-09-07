@@ -91,7 +91,7 @@ class Dora(object):
     def timeout_func(self):
         timeout = 3
         while self.pingAlive:
-            if self.last_input - time.time() < timeout:
+            if time.time() - self.last_input < timeout:
                 self.motor.set_throttle(0)
             else:
                 pass
