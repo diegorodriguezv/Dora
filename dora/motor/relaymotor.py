@@ -38,4 +38,4 @@ class RelayMotor(object):
             if throttle < 0 or throttle > 1:
                 print "Error: Invalid throttle value"
                 return
-            self.throttle = throttle
+            self.throttle = float(throttle)

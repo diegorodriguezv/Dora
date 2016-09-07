@@ -1,3 +1,4 @@
+import atexit
 import os
 import threading
 import traceback
@@ -28,6 +29,7 @@ class Dora(object):
         exit(0)
 
     def setup(self):
+        atexit.register(self.terminate())
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin, GPIO.OUT)
