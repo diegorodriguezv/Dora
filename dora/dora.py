@@ -85,16 +85,13 @@ class Dora(object):
         while self.alive:
             if self.check_ping_error():
                 self.motor.set_throttle(0)
-            else:
-                pass
 
     def timeout_func(self):
-        timeout = 10
+        timeout = 3
         while self.alive:
             if time.time() - self.last_input > timeout:
                 self.motor.set_throttle(0)
-            else:
-                pass
+            time.sleep(0.5)
 
 
 if __name__ == "__main__":
