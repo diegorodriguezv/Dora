@@ -56,7 +56,7 @@ class Dora(object):
             GPIO.setwarnings(False)
             GPIO.setmode(GPIO.BOARD)
             for pin in pins:
-                GPIO.setup(self.pin, GPIO.OUT)
+                GPIO.setup(pins[pin], GPIO.OUT)
                 GPIO.output(pins[pin], False)
 
     def turn_off(self):
