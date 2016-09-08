@@ -19,6 +19,7 @@ RIGHT_DOWN = 3
 DEBUG_MODE = platform.linux_distribution()[0] == 'debian'
 if not DEBUG_MODE:
     import RPi.GPIO as GPIO
+    print "hardware on"
 
 
 class Dora(object):
