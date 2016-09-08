@@ -16,7 +16,7 @@ RIGHT_UP = 2
 RIGHT_DOWN = 3
 
 # Don't use the raspberry pi in debug mode
-DEBUG_MODE = platform.linux_distribution()[0] == 'debian'
+DEBUG_MODE = platform.linux_distribution()[0] != 'debian'
 if not DEBUG_MODE:
     import RPi.GPIO as GPIO
     print "hardware on"
