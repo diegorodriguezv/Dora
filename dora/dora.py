@@ -58,13 +58,13 @@ class Dora(object):
             GPIO.setwarnings(False)
             GPIO.setmode(GPIO.BOARD)
             for pin in pins:
-                GPIO.setup(pins[pin], GPIO.OUT)
-                GPIO.output(pins[pin], False)
+                GPIO.setup(pin, GPIO.OUT)
+                GPIO.output(pin, False)
 
     def turn_off(self):
         if not DEBUG_MODE:
             for pin in pins:
-                GPIO.output(pins[pin], False)
+                GPIO.output(pin, False)
 
     def left_up_signal_on(self):
         if not DEBUG_MODE:
