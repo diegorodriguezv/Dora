@@ -7,7 +7,6 @@ import traceback
 import subprocess
 import time
 import readchar
-import msvcrt
 
 import motor.bidirectionalmotor
 
