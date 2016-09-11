@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 import traceback
@@ -18,27 +19,27 @@ class BidirectionalMotor(object):
             self.control_thread = threading.Thread(target=self.control_func)
             self.control_thread.start()
         except Exception as exc:
-            print "Error: unable to start thread - {0}".format(exc)
+            logging.error("Error: unable to start thread - {0}".format(exc))
 
     def control_func(self):
         try:
             while self.alive:
-                if self.throttle == 0:
-                    time.sleep(self.period)
-                else:
-                    active_period = abs(self.throttle) * self.period
-                    inactive_period = self.period - active_period
-                    self.down_on_func() if self.throttle < 0 else self.up_on_func()
-                    time.sleep(active_period)
-                    self.down_off_func() if self.throttle < 0 else self.up_off_func()
-                    time.sleep(inactive_period)
+                current_throttle = self.throttle
+                active_period = abs(current_throttle) * self.period
+                if active_period != 0:
+                    self.down_on_func() if current_throttle < 0 else self.up_on_func()
+                time.sleep(active_period)
+                inactive_period = self.period - active_period
+                if active_period != 0:
+                    self.down_off_func() if current_throttle < 0 else self.up_off_func()
+                time.sleep(inactive_period)
         except Exception as exc:
-            print "Error: in control_thread - {0}".format(exc)
+            logging.error("Error: in control_thread - {0}".format(exc))
             traceback.print_exc()
 
     def set_throttle(self, throttle):
         with self.lock:
             if throttle < -1 or throttle > 1:
-                print "Error: Invalid throttle value"
+                logging.error("Error: Invalid throttle value")
                 return
             self.throttle = float(throttle)

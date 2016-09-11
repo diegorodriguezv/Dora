@@ -1,4 +1,5 @@
 import atexit
+import logging
 import os
 import platform
 import threading
@@ -19,7 +20,10 @@ RIGHT_DOWN = 3
 DEBUG_MODE = platform.linux_distribution()[0] != 'debian'
 if not DEBUG_MODE:
     import RPi.GPIO as GPIO
+
     print "hardware on"
+else:
+    print "no hardware"
 
 
 class Dora(object):
@@ -50,7 +54,6 @@ class Dora(object):
         self.left_motor.control_thread.join()
         self.right_motor.control_thread.join()
         self.turn_off()
-        # print "terminate"
         os._exit(0)
 
     def setup(self):
@@ -65,6 +68,10 @@ class Dora(object):
         if not DEBUG_MODE:
             for pin in pins:
                 GPIO.output(pin, False)
+            GPIO.cleanup()
+            print "hardware off"
+        else:
+            print "no hardware"
 
     def left_up_signal_on(self):
         if not DEBUG_MODE:
@@ -102,7 +109,7 @@ class Dora(object):
         increment = .1
         try:
             while 1:
-                print "left = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C"
+                print "left = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C   >",
                 inp = raw_input().strip().upper()
                 self.last_input = time.time()
                 if inp == "Q":
@@ -133,7 +140,7 @@ class Dora(object):
                     self.terminate()
                 print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
         except Exception as exc:
-            print "Error: in tui_thread - {0}".format(exc)
+            logging.error("Error: in tui_thread - {0}".format(exc))
             traceback.print_exc()
 
     def check_ping_error(self):
