@@ -6,6 +6,8 @@ import threading
 import traceback
 import subprocess
 import time
+import readchar
+import msvcrt
 
 import motor.bidirectionalmotor
 
@@ -110,7 +112,8 @@ class Dora(object):
         try:
             while 1:
                 print "left = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C   >",
-                inp = raw_input().strip().upper()
+                inp = readchar.readchar().upper()
+                print 'You pressed', inp
                 self.last_input = time.time()
                 if inp == "Q":
                     self.left_motor.set_throttle(self.left_motor.throttle + increment)
