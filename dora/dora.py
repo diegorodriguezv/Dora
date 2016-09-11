@@ -12,10 +12,10 @@ import motor.bidirectionalmotor
 
 # gpio: 4, 17, 27, 22
 pins = [7, 11, 13, 15]
-LEFT_UP = 0
-LEFT_DOWN = 1
-RIGHT_UP = 2
-RIGHT_DOWN = 3
+LEFT_UP = 2
+LEFT_DOWN = 3
+RIGHT_UP = 0
+RIGHT_DOWN = 1
 
 # Don't use the raspberry pi in debug mode
 DEBUG_MODE = platform.linux_distribution()[0] != 'debian'
