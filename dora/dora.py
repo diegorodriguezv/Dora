@@ -154,6 +154,7 @@ class Dora(object):
             button_history = [0 for button in range(j.get_numbuttons())]
             while 1:
                 pygame.event.pump()
+		time.sleep(min(self.left_motor.period, self.right_motor.period))
                 ax_l = j.get_axis(AXIS_L) / AXIS_RES
                 self.left_motor.set_throttle(ax_l)
                 ax_r = j.get_axis(AXIS_R) / AXIS_RES
