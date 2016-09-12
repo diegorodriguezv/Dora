@@ -143,8 +143,8 @@ class Dora(object):
     def joystick_axis_func(self):
         increment = .1
         PS_BTN = 16
-        AXIS_L = 3
-        AXIS_R = 1
+        AXIS_L = 1
+        AXIS_R = 3
         AXIS_RES = -1.0
         try:
             pygame.init()
