@@ -21,14 +21,14 @@ class Dora(object):
         hw.setup()
         self.left_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.left_up_signal_on, hw.left_up_signal_off,
                                                                       hw.left_down_signal_on,
-                                                                      hw.left_down_signal_off)
+                                                                      hw.left_down_signal_off, 0.05)
         self.right_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.right_up_signal_on,
                                                                        hw.right_up_signal_off,
                                                                        hw.right_down_signal_on,
-                                                                       hw.right_down_signal_off)
+                                                                       hw.right_down_signal_off, 0.05)
         self.tui_thread = threading.Thread(target=self.tui_func)
         self.tui_thread.start()
-        self.js_thread = threading.Thread(target=self.joystick_button_func)
+        self.js_thread = threading.Thread(target=self.joystick_axis_func)
         self.js_thread.start()
         self.ping_thread = threading.Thread(target=self.ping_func)
         self.ping_thread.start()
@@ -134,6 +134,38 @@ class Dora(object):
                                 print "Bye!"
                                 self.terminate()
                             print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
+                    else:
+                        button_history[button] = 0
+        except Exception as exc:
+            logging.error("Error: in js_thread - {0}".format(exc))
+            traceback.print_exc()
+
+    def joystick_axis_func(self):
+        increment = .1
+        PS_BTN = 16
+        AXIS_L = 1
+        AXIS_R = 3
+        AXIS_RES = 1.0
+        try:
+            pygame.init()
+            j = pygame.joystick.Joystick(0)
+            j.init()
+            print "Using: {}".format(j.get_name())
+            button_history = [0 for button in range(j.get_numbuttons())]
+            while 1:
+                pygame.event.pump()
+                ax_l = j.get_axis(AXIS_L) / AXIS_RES
+                self.left_motor.set_throttle(ax_l)
+                ax_r = j.get_axis(AXIS_R) / AXIS_RES
+                self.right_motor.set_throttle(ax_r)
+                for button in range(0, j.get_numbuttons()):
+                    if j.get_button(button) != 0:
+                        if not button_history[button]:
+                            if button == PS_BTN:
+                                print "Bye!"
+                                self.terminate()
+                            print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
+                            # print "axes: {} - {}".format(ax_l, ax_r)
                     else:
                         button_history[button] = 0
         except Exception as exc:
