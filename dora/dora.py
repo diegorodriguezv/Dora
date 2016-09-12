@@ -85,54 +85,59 @@ class Dora(object):
 
     def joystick_button_func(self):
         increment = .1
+        DPAD_U = 4
+        DPAD_R = 5
+        DPAD_D = 6
+        DPAD_L = 7
+        PS_BTN = 16
+        BTNPAD_U = 12
+        BTNPAD_R = 13
+        BTNPAD_D = 14
         try:
             pygame.init()
             j = pygame.joystick.Joystick(0)
             j.init()
             print "Using: {}".format(j.get_name())
-            button_history = [0 for i in range(j.get_numbuttons())]
+            button_history = [0 for button in range(j.get_numbuttons())]
             while 1:
                 pygame.event.pump()
-                for i in range(0, j.get_numbuttons()):
-                    if j.get_button(i) != 0:
-                        if not button_history[i]:
-                            print 'Button %i reads %i' % (i, j.get_button(i))
-                            button_history[i] = 1
+                for button in range(0, j.get_numbuttons()):
+                    if j.get_button(button) != 0:
+                        if not button_history[button]:
+                            # print 'Button %i reads %i' % (button, j.get_button(button))
+                            button_history[button] = 1
+                            self.last_input = time.time()
+                            if button == DPAD_U:
+                                self.left_motor.set_throttle(self.left_motor.throttle + increment)
+                            elif button == DPAD_D:
+                                self.left_motor.set_throttle(self.left_motor.throttle - increment)
+                            elif button == DPAD_L:
+                                self.left_motor.set_throttle(0)
+                            # elif button == "W":
+                            #     self.left_motor.set_throttle(1)
+                            # elif button == "S":
+                            #     self.left_motor.set_throttle(-1)
+                            # elif button == "X":
+                            #     print "Bye!"
+                            #     self.terminate()
+                            if button == BTNPAD_U:
+                                self.right_motor.set_throttle(self.right_motor.throttle + increment)
+                            elif button == BTNPAD_D:
+                                self.right_motor.set_throttle(self.right_motor.throttle - increment)
+                            elif button == BTNPAD_R:
+                                self.right_motor.set_throttle(0)
+                            # elif button == "E":
+                            #     self.right_motor.set_throttle(1)
+                            # elif button == "D":
+                            #     self.right_motor.set_throttle(-1)
+                            elif button == PS_BTN:
+                                print "Bye!"
+                                self.terminate()
+                            print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                     else:
-                        button_history[i] = 0
-
-                # inp = readchar.readchar().upper()
-                # print "You pressed", inp
-                # self.last_input = time.time()
-                # if inp == "Q":
-                #     self.left_motor.set_throttle(self.left_motor.throttle + increment)
-                # elif inp == "A":
-                #     self.left_motor.set_throttle(self.left_motor.throttle - increment)
-                # elif inp == "Z":
-                #     self.left_motor.set_throttle(0)
-                # elif inp == "W":
-                #     self.left_motor.set_throttle(1)
-                # elif inp == "S":
-                #     self.left_motor.set_throttle(-1)
-                # elif inp == "X":
-                #     print "Bye!"
-                #     self.terminate()
-                # if inp == "R":
-                #     self.right_motor.set_throttle(self.right_motor.throttle + increment)
-                # elif inp == "F":
-                #     self.right_motor.set_throttle(self.right_motor.throttle - increment)
-                # elif inp == "V":
-                #     self.right_motor.set_throttle(0)
-                # elif inp == "E":
-                #     self.right_motor.set_throttle(1)
-                # elif inp == "D":
-                #     self.right_motor.set_throttle(-1)
-                # elif inp == "C":
-                #     print "Bye!"
-                #     self.terminate()
-                # print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
+                        button_history[button] = 0
         except Exception as exc:
-            logging.error("Error: in tui_thread - {0}".format(exc))
+            logging.error("Error: in js_thread - {0}".format(exc))
             traceback.print_exc()
 
     def check_ping_error(self):
