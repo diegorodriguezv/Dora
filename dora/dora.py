@@ -48,8 +48,8 @@ class Dora(object):
         increment = .1
         try:
             while 1:
-                print "left = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C   >",
-                inp = readchar.readchar().upper()
+                print "left = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C"
+                inp = readchar.readkey().upper()
                 print 'You pressed', inp
                 self.last_input = time.time()
                 if inp == "Q":
@@ -86,7 +86,6 @@ class Dora(object):
     def joystick_button_func(self):
         increment = .1
         DPAD_U = 4
-        DPAD_R = 5
         DPAD_D = 6
         DPAD_L = 7
         PS_BTN = 16
@@ -105,35 +104,28 @@ class Dora(object):
                     if j.get_button(button) != 0:
                         if not button_history[button]:
                             # print 'Button %i reads %i' % (button, j.get_button(button))
-                            button_history[button] = 1
+                            button_history[button] = True
                             self.last_input = time.time()
+                            was_recognized = True
                             if button == DPAD_U:
                                 self.left_motor.set_throttle(self.left_motor.throttle + increment)
                             elif button == DPAD_D:
                                 self.left_motor.set_throttle(self.left_motor.throttle - increment)
                             elif button == DPAD_L:
                                 self.left_motor.set_throttle(0)
-                            # elif button == "W":
-                            #     self.left_motor.set_throttle(1)
-                            # elif button == "S":
-                            #     self.left_motor.set_throttle(-1)
-                            # elif button == "X":
-                            #     print "Bye!"
-                            #     self.terminate()
                             if button == BTNPAD_U:
                                 self.right_motor.set_throttle(self.right_motor.throttle + increment)
                             elif button == BTNPAD_D:
                                 self.right_motor.set_throttle(self.right_motor.throttle - increment)
                             elif button == BTNPAD_R:
                                 self.right_motor.set_throttle(0)
-                            # elif button == "E":
-                            #     self.right_motor.set_throttle(1)
-                            # elif button == "D":
-                            #     self.right_motor.set_throttle(-1)
                             elif button == PS_BTN:
                                 print "Bye!"
                                 self.terminate()
-                            print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
+                            else:
+                                was_recognized = False
+                            if was_recognized:
+                                print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                     else:
                         button_history[button] = 0
         except Exception as exc:
@@ -141,7 +133,6 @@ class Dora(object):
             traceback.print_exc()
 
     def joystick_axis_func(self):
-        increment = .1
         PS_BTN = 16
         AXIS_L = 1
         AXIS_R = 3
@@ -150,11 +141,11 @@ class Dora(object):
             pygame.init()
             j = pygame.joystick.Joystick(0)
             j.init()
-            print "Using: {}".format(j.get_name())
-            button_history = [0 for button in range(j.get_numbuttons())]
+            print "Joystick: {}".format(j.get_name())
+            button_history = [False for button in range(j.get_numbuttons())]
             while 1:
                 pygame.event.pump()
-		time.sleep(min(self.left_motor.period, self.right_motor.period))
+                time.sleep(min(self.left_motor.period, self.right_motor.period))
                 ax_l = j.get_axis(AXIS_L) / AXIS_RES
                 self.left_motor.set_throttle(ax_l)
                 ax_r = j.get_axis(AXIS_R) / AXIS_RES
@@ -166,37 +157,38 @@ class Dora(object):
                                 print "Bye!"
                                 self.terminate()
                             print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
-                            # print "axes: {} - {}".format(ax_l, ax_r)
                     else:
                         button_history[button] = 0
         except Exception as exc:
             logging.error("Error: in js_thread - {0}".format(exc))
             traceback.print_exc()
 
-    def check_ping_error(self):
-        # hostname = "8.8.8.8"
-        hostname = "192.168.1.171"
-        response = False
-        FNULL = open(os.devnull, 'w')
-        if os.name == "nt":
-            response = subprocess.call(["ping", "-n", "1", hostname], stdout=FNULL)
-        if os.name == "posix":
-            response = subprocess.call(["ping", "-c", "1", hostname], stdout=FNULL)
-        return response
-
-    def ping_func(self):
-        while self.alive:
-            if self.check_ping_error():
-                self.left_motor.set_throttle(0)
-                self.right_motor.set_throttle(0)
-
     def timeout_func(self):
         timeout = 3
+        print "Monitoring for input every {} seconds".format(timeout)
         while self.alive:
             if time.time() - self.last_input > timeout:
                 self.left_motor.set_throttle(0)
                 self.right_motor.set_throttle(0)
             time.sleep(0.5)
+
+    def ping_func(self):
+        # hostname = "8.8.8.8"
+        hostname = "192.168.1.171"
+        print "Monitoring connection to {} every second".format(hostname)
+        while self.alive:
+            if check_ping_error(hostname):
+                self.left_motor.set_throttle(0)
+                self.right_motor.set_throttle(0)
+
+def check_ping_error(hostname):
+    response = False
+    FNULL = open(os.devnull, 'w')
+    if os.name == "nt":
+        response = subprocess.call(["ping", "-n", "1", hostname], stdout=FNULL)
+    if os.name == "posix":
+        response = subprocess.call(["ping", "-c", "1", hostname], stdout=FNULL)
+    return response
 
 
 if __name__ == "__main__":
