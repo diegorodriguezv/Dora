@@ -1,15 +1,16 @@
 import atexit
 import logging
 import os
-import threading
-import traceback
 import subprocess
+import threading
 import time
-import readchar
+import traceback
+
 import pygame
+import readchar
 
 import motor.bidirectionalmotor
-import hw
+from dora.hw import motor
 
 
 class Dora(object):
@@ -18,14 +19,14 @@ class Dora(object):
 
     def __init__(self):
         atexit.register(self.terminate)
-        hw.setup()
-        self.left_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.left_up_signal_on, hw.left_up_signal_off,
-                                                                      hw.left_down_signal_on,
-                                                                      hw.left_down_signal_off, 0.05)
-        self.right_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.right_up_signal_on,
-                                                                       hw.right_up_signal_off,
-                                                                       hw.right_down_signal_on,
-                                                                       hw.right_down_signal_off, 0.05)
+        motor.setup()
+        self.left_motor = motor.bidirectionalmotor.BidirectionalMotor(motor.left_up_signal_on, motor.left_up_signal_off,
+                                                                      motor.left_down_signal_on,
+                                                                      motor.left_down_signal_off, 0.05)
+        self.right_motor = motor.bidirectionalmotor.BidirectionalMotor(motor.right_up_signal_on,
+                                                                       motor.right_up_signal_off,
+                                                                       motor.right_down_signal_on,
+                                                                       motor.right_down_signal_off, 0.05)
         self.tui_thread = threading.Thread(target=self.tui_func)
         self.tui_thread.start()
         self.js_thread = threading.Thread(target=self.joystick_axis_func)
@@ -41,7 +42,7 @@ class Dora(object):
         self.alive = False
         self.left_motor.control_thread.join()
         self.right_motor.control_thread.join()
-        hw.turn_off()
+        motor.turn_off()
         os._exit(0)
 
     def tui_func(self):
@@ -65,7 +66,7 @@ class Dora(object):
                 elif inp == "X":
                     print "Bye!"
                     self.terminate()
-                if inp == "R":
+                elif inp == "R":
                     self.right_motor.set_throttle(self.right_motor.throttle + increment)
                 elif inp == "F":
                     self.right_motor.set_throttle(self.right_motor.throttle - increment)
@@ -103,9 +104,6 @@ class Dora(object):
                 for button in range(0, j.get_numbuttons()):
                     if j.get_button(button) != 0:
                         if not button_history[button]:
-                            # print 'Button %i reads %i' % (button, j.get_button(button))
-                            button_history[button] = True
-                            self.last_input = time.time()
                             was_recognized = True
                             if button == DPAD_U:
                                 self.left_motor.set_throttle(self.left_motor.throttle + increment)
@@ -113,7 +111,7 @@ class Dora(object):
                                 self.left_motor.set_throttle(self.left_motor.throttle - increment)
                             elif button == DPAD_L:
                                 self.left_motor.set_throttle(0)
-                            if button == BTNPAD_U:
+                            elif button == BTNPAD_U:
                                 self.right_motor.set_throttle(self.right_motor.throttle + increment)
                             elif button == BTNPAD_D:
                                 self.right_motor.set_throttle(self.right_motor.throttle - increment)
@@ -125,6 +123,8 @@ class Dora(object):
                             else:
                                 was_recognized = False
                             if was_recognized:
+                                button_history[button] = True
+                                self.last_input = time.time()
                                 print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                     else:
                         button_history[button] = 0
@@ -180,6 +180,7 @@ class Dora(object):
             if check_ping_error(hostname):
                 self.left_motor.set_throttle(0)
                 self.right_motor.set_throttle(0)
+
 
 def check_ping_error(hostname):
     response = False
