@@ -5,12 +5,11 @@ import subprocess
 import threading
 import time
 import traceback
-
 import pygame
 import readchar
 
 import motor.bidirectionalmotor
-from dora.hw import motor
+import hw.motor
 
 
 class Dora(object):
@@ -19,14 +18,15 @@ class Dora(object):
 
     def __init__(self):
         atexit.register(self.terminate)
-        motor.setup()
-        self.left_motor = motor.bidirectionalmotor.BidirectionalMotor(motor.left_up_signal_on, motor.left_up_signal_off,
-                                                                      motor.left_down_signal_on,
-                                                                      motor.left_down_signal_off, 0.05)
-        self.right_motor = motor.bidirectionalmotor.BidirectionalMotor(motor.right_up_signal_on,
-                                                                       motor.right_up_signal_off,
-                                                                       motor.right_down_signal_on,
-                                                                       motor.right_down_signal_off, 0.05)
+        hw.motor.setup()
+        self.left_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.motor.left_up_signal_on,
+                                                                      hw.motor.left_up_signal_off,
+                                                                      hw.motor.left_down_signal_on,
+                                                                      hw.motor.left_down_signal_off, 0.05)
+        self.right_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.motor.right_up_signal_on,
+                                                                       hw.motor.right_up_signal_off,
+                                                                       hw.motor.right_down_signal_on,
+                                                                       hw.motor.right_down_signal_off, 0.05)
         self.tui_thread = threading.Thread(target=self.tui_func)
         self.tui_thread.start()
         self.js_thread = threading.Thread(target=self.joystick_axis_func)
@@ -42,7 +42,7 @@ class Dora(object):
         self.alive = False
         self.left_motor.control_thread.join()
         self.right_motor.control_thread.join()
-        motor.turn_off()
+        hw.motor.turn_off()
         os._exit(0)
 
     def tui_func(self):
