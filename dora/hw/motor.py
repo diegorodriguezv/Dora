@@ -9,7 +9,7 @@ if not DEBUG_MODE:
 
     print "hardware on"
 else:
-    print "no hardware"
+    print "no hardware to turn on"
 
 # gpio: 4, 17, 27, 22
 PINS = [7, 11, 13, 15]
@@ -35,7 +35,7 @@ def turn_off():
         GPIO.cleanup()
         print "hardware off"
     else:
-        print "no hardware"
+        print "no hardware to turn off"
 
 
 def left_up_signal_on():

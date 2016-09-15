@@ -18,6 +18,7 @@ class Dora(object):
 
     def __init__(self):
         atexit.register(self.terminate)
+        logging.getLogger().setLevel(logging.DEBUG)
         hw.motor.setup()
         self.left_motor = motor.bidirectionalmotor.BidirectionalMotor(hw.motor.left_up_signal_on,
                                                                       hw.motor.left_up_signal_off,
@@ -124,8 +125,8 @@ class Dora(object):
                                 was_recognized = False
                             if was_recognized:
                                 button_history[button] = True
-                                self.last_input = time.time()
-                                print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
+                            self.last_input = time.time()
+                            print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                     else:
                         button_history[button] = 0
         except Exception as exc:
@@ -143,43 +144,69 @@ class Dora(object):
             j.init()
             print "Joystick: {}".format(j.get_name())
             button_history = [False for button in range(j.get_numbuttons())]
+            axis_history = [0, 0]
             while 1:
                 pygame.event.pump()
                 time.sleep(min(self.left_motor.period, self.right_motor.period))
                 ax_l = j.get_axis(AXIS_L) / AXIS_RES
-                self.left_motor.set_throttle(ax_l)
+                if ax_l != axis_history[0]:
+                    self.left_motor.set_throttle(ax_l)
+                    axis_history[0] = ax_l
+                    self.last_input = time.time()
+                    print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                 ax_r = j.get_axis(AXIS_R) / AXIS_RES
-                self.right_motor.set_throttle(ax_r)
+                if ax_r != axis_history[1]:
+                    self.right_motor.set_throttle(ax_r)
+                    axis_history[1] = ax_r
+                    self.last_input = time.time()
+                    print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                 for button in range(0, j.get_numbuttons()):
                     if j.get_button(button) != 0:
                         if not button_history[button]:
                             if button == PS_BTN:
                                 print "Bye!"
                                 self.terminate()
+                            button_history[button] = True
+                            self.last_input = time.time()
                             print "throttle: {} - {}".format(self.left_motor.throttle, self.right_motor.throttle)
                     else:
-                        button_history[button] = 0
+                        button_history[button] = False
         except Exception as exc:
             logging.error("Error: in js_thread - {0}".format(exc))
             traceback.print_exc()
 
     def timeout_func(self):
         timeout = 3
-        print "Monitoring for input every {} seconds".format(timeout)
+        triggered = False
+        print "Checking for input timeout: {} seconds".format(timeout)
         while self.alive:
             if time.time() - self.last_input > timeout:
-                self.left_motor.set_throttle(0)
-                self.right_motor.set_throttle(0)
+                if not triggered:
+                    self.left_motor.set_throttle(0)
+                    self.right_motor.set_throttle(0)
+                    logging.info("Input timeout: stopping")
+                    triggered = True
+            else:
+                triggered = False
             time.sleep(0.5)
+            logging.debug("Checking for input timeout")
 
     def ping_func(self):
-        # hostname = "8.8.8.8"
-        hostname = "192.168.1.171"
-        print "Monitoring connection to {} every second".format(hostname)
+        hostname = "8.8.8.8"
+        # hostname = "192.168.1.171"
+        triggered = False
+        print "Checking connection to {}".format(hostname)
         while self.alive:
             if check_ping_error(hostname):
-                self.left_motor.set_throttle(0)
-                self.right_motor.set_throttle(0)
+                if not triggered:
+                    self.left_motor.set_throttle(0)
+                    self.right_motor.set_throttle(0)
+                    logging.info("Connection lost: stopping")
+                    triggered = True
+            else:
+                triggered = False
+            time.sleep(0.5)
+            logging.debug("Checking connection")
 
 
 def check_ping_error(hostname):
