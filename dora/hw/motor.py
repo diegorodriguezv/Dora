@@ -81,11 +81,11 @@ def right_down_signal_off():
         GPIO.output(PINS[RIGHT_DOWN], False)
 
 
-def motor_power_signal_on():
+def motors_power_signal_on():
     if not DEBUG_MODE:
         GPIO.output(PINS[MOTOR_POWER], True)
 
 
-def motor_power_signal_off():
+def motors_power_signal_off():
     if not DEBUG_MODE:
         GPIO.output(PINS[MOTOR_POWER], False)
