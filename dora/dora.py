@@ -48,8 +48,8 @@ class Dora(object):
         self.js_thread.start()
         self.ping_thread = threading.Thread(target=self.ping_func)
         self.ping_thread.start()
-        self.timeout_thread = threading.Thread(target=self.input_timeout_func)
-        self.timeout_thread.start()
+        self.input_timeout_thread = threading.Thread(target=self.input_timeout_func)
+        self.input_timeout_thread.start()
 
     def terminate(self):
         self.left_motor.alive = False
@@ -62,9 +62,13 @@ class Dora(object):
 
     def set_left_throttle(self, throttle):
         self.left_motor.set_throttle(throttle)
+        if throttle == 0 and self.right_motor.throttle == 0:
+            self.last_zero_throttle = time.time()
 
     def set_right_throttle(self, throttle):
         self.right_motor.set_throttle(throttle)
+        if throttle == 0 and self.left_motor.throttle == 0:
+            self.last_zero_throttle = time.time()
 
     def get_left_throttle(self):
         return self.left_motor.throttle

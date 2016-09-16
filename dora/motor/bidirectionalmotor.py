@@ -7,7 +7,6 @@ import traceback
 class BidirectionalMotor(object):
     lock = threading.Lock()
     alive = True
-    zero_delta = 0.01
 
     def __init__(self, up_on_func, up_off_func, down_on_func, down_off_func, period=0.1):
         self.up_on_func = up_on_func
@@ -43,7 +42,4 @@ class BidirectionalMotor(object):
             if throttle < -1 or throttle > 1:
                 logging.error("Error: Invalid throttle value")
                 return
-            if -self.zero_delta < throttle < self.zero_delta:
-                self.throttle = 0.0
-            else:
-                self.throttle = float(throttle)
+            self.throttle = float(throttle)

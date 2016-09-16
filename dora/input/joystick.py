@@ -60,6 +60,7 @@ def joystick_axis_func(period, actions):
     AXIS_L = 1
     AXIS_R = 3
     AXIS_RES = -1.0
+    zero_delta = 0.01
     try:
         pygame.init()
         j = pygame.joystick.Joystick(0)
@@ -70,19 +71,23 @@ def joystick_axis_func(period, actions):
         while 1:
             pygame.event.pump()
             time.sleep(period)
-            ax_l = j.get_axis(AXIS_L) / AXIS_RES
-            if ax_l != axis_history[0]:
-                actions["set_left_throttle"](ax_l)
-                axis_history[0] = ax_l
-                if ax_l != 0:
-                    actions["input_recorded"]()
+            ax_l_value = j.get_axis(AXIS_L) / AXIS_RES
+            if -zero_delta < ax_l_value < zero_delta:
+                ax_l_value = 0
+            if ax_l_value != 0:
+                actions["input_recorded"]()
+            if ax_l_value != axis_history[0]:
+                actions["set_left_throttle"](ax_l_value)
+                axis_history[0] = ax_l_value
                 print "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]())
-            ax_r = j.get_axis(AXIS_R) / AXIS_RES
-            if ax_r != axis_history[1]:
-                actions["set_right_throttle"](ax_r)
-                axis_history[1] = ax_r
-                if ax_r != 0:
-                    actions["input_recorded"]()
+            ax_r_value = j.get_axis(AXIS_R) / AXIS_RES
+            if -zero_delta < ax_r_value < zero_delta:
+                ax_r_value = 0
+            if ax_r_value != 0:
+                actions["input_recorded"]()
+            if ax_r_value != axis_history[1]:
+                actions["set_right_throttle"](ax_r_value)
+                axis_history[1] = ax_r_value
                 print "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]())
             for button in range(0, j.get_numbuttons()):
                 if j.get_button(button) != 0:
