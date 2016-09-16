@@ -57,8 +57,8 @@ def joystick_button_func(self):
 
 def joystick_axis_func(period, actions):
     PS_BTN = 16
-    AXIS_L = 1
-    AXIS_R = 3
+    AXIS_THROTTLE = 1
+    AXIS_STEERING = 2
     AXIS_RES = -1.0
     zero_delta = 0.01
     try:
@@ -71,23 +71,18 @@ def joystick_axis_func(period, actions):
         while 1:
             pygame.event.pump()
             time.sleep(period)
-            ax_l_value = j.get_axis(AXIS_L) / AXIS_RES
-            if -zero_delta < ax_l_value < zero_delta:
-                ax_l_value = 0
-            if ax_l_value != 0:
+            ax_t_value = j.get_axis(AXIS_THROTTLE) / AXIS_RES
+            if -zero_delta < ax_t_value < zero_delta:
+                ax_t_value = 0
+            ax_s_value = j.get_axis(AXIS_STEERING) / AXIS_RES
+            if -zero_delta < ax_s_value < zero_delta:
+                ax_s_value = 0
+            if ax_t_value != 0 or ax_s_value != 0:
                 actions["input_recorded"]()
-            if ax_l_value != axis_history[0]:
-                actions["set_left_throttle"](ax_l_value)
-                axis_history[0] = ax_l_value
-                print "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]())
-            ax_r_value = j.get_axis(AXIS_R) / AXIS_RES
-            if -zero_delta < ax_r_value < zero_delta:
-                ax_r_value = 0
-            if ax_r_value != 0:
-                actions["input_recorded"]()
-            if ax_r_value != axis_history[1]:
-                actions["set_right_throttle"](ax_r_value)
-                axis_history[1] = ax_r_value
+            if ax_t_value != axis_history[0] or ax_s_value != axis_history[1]:
+                actions["set_throttle_steering"](ax_t_value, ax_s_value)
+                axis_history[0] = ax_t_value
+                axis_history[1] = ax_s_value
                 print "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]())
             for button in range(0, j.get_numbuttons()):
                 if j.get_button(button) != 0:

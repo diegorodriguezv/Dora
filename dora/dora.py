@@ -16,6 +16,8 @@ class Dora(object):
     last_zero_throttle = time.time()
     saving_power = False
     idle = False
+    main_throttle = 0
+    steering = 0
 
     def __init__(self):
         atexit.register(self.terminate)
@@ -36,7 +38,8 @@ class Dora(object):
                    "set_left_throttle": self.set_left_throttle,
                    "set_right_throttle": self.set_right_throttle,
                    "terminate": self.terminate,
-                   "input_recorded": self.input_recorded}
+                   "input_recorded": self.input_recorded,
+                   "set_throttle_steering": self.set_throttle_steering}
         self.tui_thread = threading.Thread(target=input.tui.tui_func, args=[actions])
         self.tui_thread.start()
         self.js_thread = threading.Thread(target=input.joystick.joystick_axis_func,
@@ -57,6 +60,11 @@ class Dora(object):
         self.right_motor.control_thread.join()
         hw.motor.turn_off()
         os._exit(0)
+
+    def set_throttle_steering(self, main_throttle, steering):
+        left, right = convert_steering_to_2motors(main_throttle, steering)
+        self.set_left_throttle(left)
+        self.set_right_throttle(right)
 
     def set_left_throttle(self, throttle):
         self.left_motor.set_throttle(throttle)
@@ -141,6 +149,12 @@ class Dora(object):
             else:
                 triggered = False
             time.sleep(0.5)
+
+
+def convert_steering_to_2motors(throttle, steering):
+    difference = throttle * steering
+    left, right = throttle + difference, throttle - difference
+    return left, right
 
 
 if __name__ == "__main__":
