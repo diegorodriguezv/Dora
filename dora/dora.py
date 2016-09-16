@@ -14,6 +14,8 @@ class Dora(object):
     alive = True
     last_input = time.time()
     last_zero_throttle = time.time()
+    saving_power = False
+    idle = False
 
     def __init__(self):
         atexit.register(self.terminate)
@@ -29,27 +31,23 @@ class Dora(object):
                                                                        hw.motor.right_down_signal_on,
                                                                        hw.motor.right_down_signal_off,
                                                                        0.05)
-        tui_actions = {"get_left_throttle": self.get_left_throttle,
-                       "get_right_throttle": self.get_right_throttle,
-                       "set_left_throttle": self.set_left_throttle,
-                       "set_right_throttle": self.set_right_throttle,
-                       "terminate": self.terminate,
-                       "input_recorded": self.input_recorded}
-        self.tui_thread = threading.Thread(target=input.tui.tui_func, args=[tui_actions])
+        actions = {"get_left_throttle": self.get_left_throttle,
+                   "get_right_throttle": self.get_right_throttle,
+                   "set_left_throttle": self.set_left_throttle,
+                   "set_right_throttle": self.set_right_throttle,
+                   "terminate": self.terminate,
+                   "input_recorded": self.input_recorded}
+        self.tui_thread = threading.Thread(target=input.tui.tui_func, args=[actions])
         self.tui_thread.start()
-        joystick_actions = {"get_left_throttle": self.get_left_throttle,
-                            "get_right_throttle": self.get_right_throttle,
-                            "set_left_throttle": self.set_left_throttle,
-                            "set_right_throttle": self.set_right_throttle,
-                            "terminate": self.terminate,
-                            "input_recorded": self.input_recorded}
         self.js_thread = threading.Thread(target=input.joystick.joystick_axis_func,
-                                          args=[min(self.left_motor.period, self.right_motor.period), joystick_actions])
+                                          args=[min(self.left_motor.period, self.right_motor.period), actions])
         self.js_thread.start()
         self.ping_thread = threading.Thread(target=self.ping_func)
         self.ping_thread.start()
         self.input_timeout_thread = threading.Thread(target=self.input_timeout_func)
         self.input_timeout_thread.start()
+        self.save_energy_thread = threading.Thread(target=self.save_energy_func)
+        self.save_energy_thread.start()
 
     def terminate(self):
         self.left_motor.alive = False
@@ -62,13 +60,29 @@ class Dora(object):
 
     def set_left_throttle(self, throttle):
         self.left_motor.set_throttle(throttle)
-        if throttle == 0 and self.right_motor.throttle == 0:
+        if throttle == 0 and self.right_motor.throttle == 0 and not self.idle:
             self.last_zero_throttle = time.time()
+            self.idle = True
+            logging.info("Idle")
+        if throttle != 0:
+            if self.saving_power:
+                hw.motor.motors_power_signal_on()
+                logging.info("Not saving power")
+                self.saving_power = False
+            self.idle = False
 
     def set_right_throttle(self, throttle):
         self.right_motor.set_throttle(throttle)
-        if throttle == 0 and self.left_motor.throttle == 0:
+        if throttle == 0 and self.left_motor.throttle == 0 and not self.idle:
             self.last_zero_throttle = time.time()
+            self.idle = True
+            logging.info("Idle")
+        if throttle != 0:
+            if self.saving_power:
+                hw.motor.motors_power_signal_on()
+                logging.info("Not saving power")
+                self.saving_power = False
+            self.idle = False
 
     def get_left_throttle(self):
         return self.left_motor.throttle
@@ -113,7 +127,19 @@ class Dora(object):
             logging.debug("Checking connection")
 
     def save_energy_func(self):
-        Exception("Not yet")
+        timeout = 10
+        triggered = False
+        logging.info("Saving power after {} seconds".format(timeout))
+        while self.alive:
+            if time.time() - self.last_zero_throttle > timeout:
+                if not triggered:
+                    hw.motor.motors_power_signal_off()
+                    logging.info("Saving power: motor off")
+                    self.saving_power = True
+                    triggered = True
+            else:
+                triggered = False
+            time.sleep(1)
 
 
 if __name__ == "__main__":
