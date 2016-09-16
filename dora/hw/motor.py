@@ -11,12 +11,15 @@ if not DEBUG_MODE:
 else:
     print "no hardware to turn on"
 
-# gpio: 4, 17, 27, 22
-PINS = [7, 11, 13, 15]
+# 0-3: motors
+# 4: motor power system
+# gpio: 4, 17, 27, 22, 18
+PINS = [7, 11, 13, 15, 12]
 LEFT_UP = 2
 LEFT_DOWN = 3
 RIGHT_UP = 0
 RIGHT_DOWN = 1
+MOTOR_POWER = 4
 
 
 def setup():
@@ -76,3 +79,13 @@ def right_down_signal_on():
 def right_down_signal_off():
     if not DEBUG_MODE:
         GPIO.output(PINS[RIGHT_DOWN], False)
+
+
+def motor_power_signal_on():
+    if not DEBUG_MODE:
+        GPIO.output(PINS[MOTOR_POWER], True)
+
+
+def motor_power_signal_off():
+    if not DEBUG_MODE:
+        GPIO.output(PINS[MOTOR_POWER], False)
