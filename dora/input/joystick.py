@@ -15,6 +15,7 @@ def joystick_button_func(self):
     BTNPAD_U = 12
     BTNPAD_R = 13
     BTNPAD_D = 14
+    START = 3
     try:
         pygame.init()
         j = pygame.joystick.Joystick(0)
@@ -39,7 +40,7 @@ def joystick_button_func(self):
                             self.set_right_throttle(self.get_right_throttle() - increment)
                         elif button == BTNPAD_R:
                             self.set_right_throttle(0)
-                        elif button == PS_BTN:
+                        elif button == START:
                             print "Bye!"
                             self.terminate()
                         else:
