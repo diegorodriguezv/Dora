@@ -135,7 +135,7 @@ class Dora(object):
             logging.debug("Checking connection")
 
     def save_energy_func(self):
-        timeout = 5
+        timeout = 1
         triggered = False
         logging.info("Saving power after {} seconds".format(timeout))
         while self.alive:
@@ -152,7 +152,7 @@ class Dora(object):
 
 
 def convert_steering_to_2motors(throttle, steering):
-    difference = throttle * steering
+    difference = throttle * .2 * steering
     left, right = throttle + difference, throttle - difference
     return left, right
 
