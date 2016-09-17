@@ -152,8 +152,8 @@ class Dora(object):
 
 
 def convert_steering_to_2motors(throttle, steering):
-    difference = throttle * .2 * steering
-    left, right = throttle + difference, throttle - difference
+    difference = throttle * steering
+    left, right = throttle - difference, throttle + difference
     return left, right
 
 
