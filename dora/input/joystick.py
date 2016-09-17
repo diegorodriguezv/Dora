@@ -101,4 +101,4 @@ def joystick_axis_func(period, actions):
                     button_history[button] = False
     except Exception as exc:
         logging.error("Error: in js_thread - {0}".format(exc))
-        traceback.print_exc()
+        # traceback.print_exc()
