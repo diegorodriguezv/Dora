@@ -20,7 +20,7 @@ def joystick_button_func(self):
         pygame.init()
         j = pygame.joystick.Joystick(0)
         j.init()
-        print "Using: {}".format(j.get_name())
+        logging.info("Using: {}".format(j.get_name()))
         button_history = [0 for button in range(j.get_numbuttons())]
         while 1:
             pygame.event.pump()
@@ -41,14 +41,14 @@ def joystick_button_func(self):
                         elif button == BTNPAD_R:
                             self.set_right_throttle(0)
                         elif button == START:
-                            print "Bye!"
+                            logging.info("Your pressed joystick start button. Bye!".format(button))
                             self.terminate()
                         else:
                             was_recognized = False
                         if was_recognized:
                             button_history[button] = True
                         self.last_input = pygame.time.time()
-                        print "throttle: {} - {}".format(self.get_left_throttle(), self.get_right_throttle())
+                        logging.info("throttle: {} - {}".format(self.get_left_throttle(), self.get_right_throttle()))
                 else:
                     button_history[button] = 0
     except Exception as exc:
@@ -67,7 +67,7 @@ def joystick_axis_func(period, actions):
         pygame.init()
         j = pygame.joystick.Joystick(0)
         j.init()
-        print "Joystick: {}".format(j.get_name())
+        logging.info("Joystick: {}".format(j.get_name()))
         button_history = [False for button in range(j.get_numbuttons())]
         axis_history = [0, 0]
         while 1:
@@ -85,17 +85,18 @@ def joystick_axis_func(period, actions):
                 actions["set_throttle_steering"](ax_t_value, ax_s_value)
                 axis_history[0] = ax_t_value
                 axis_history[1] = ax_s_value
-                print "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]())
+                logging.info(
+                    "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]()))
             for button in range(0, j.get_numbuttons()):
                 if j.get_button(button) != 0:
                     if not button_history[button]:
                         if button == START:
-                            print "Bye!"
+                            logging.info("Your pressed joystick start button. Bye!")
                             actions["terminate"]()
                         button_history[button] = True
                         actions["input_recorded"]()
-                        print "throttle: {} - {}".format(actions["get_left_throttle"](),
-                                                         actions["get_right_throttle"]())
+                        logging.info("throttle: {} - {}".format(actions["get_left_throttle"](),
+                                                                actions["get_right_throttle"]()))
                 else:
                     button_history[button] = False
     except Exception as exc:

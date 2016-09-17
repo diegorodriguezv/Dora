@@ -89,8 +89,8 @@ class TestRelayMotor(unittest.TestCase):
         if throttle == 0:
             now = time.time()
             elapsed = now - self.start_time
-            print "{:f} finish throttle: {} on: {} of: {} ont: {:f} oft: {:f} tt: {:f} \
-real: {:f} ".format(elapsed, throttle, self.on, self.off, self.on_time, self.off_time, self.on_time + self.off_time, 0)
+            logging.info("{:f} finish throttle: {} on: {} of: {} ont: {:f} oft: {:f} tt: {:f} \
+real: {:f} ".format(elapsed, throttle, self.on, self.off, self.on_time, self.off_time, self.on_time + self.off_time, 0))
             self.assertTrue(self.on_time == 0)
             self.assertTrue(self.off_time == 0)
         else:
@@ -103,9 +103,9 @@ real: {:f} ".format(elapsed, throttle, self.on, self.off, self.on_time, self.off
             self.assertTrue(total_time != 0)
             on_rate = self.on_time / total_time
             elapsed = now - self.start_time
-            print "{:f} finish throttle: {} on: {} of: {} ont: {:f} oft: {:f} tt: {} \
+            logging.info("{:f} finish throttle: {} on: {} of: {} ont: {:f} oft: {:f} tt: {} \
 real: {} ".format(elapsed, throttle, self.on, self.off, self.on_time, self.off_time, self.on_time + self.off_time,
-                  on_rate)
+                  on_rate))
             self.assertGreaterEqual(on_rate, throttle - delta)
             self.assertLessEqual(on_rate, throttle + delta)
 

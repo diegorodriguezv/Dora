@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 import traceback
@@ -16,7 +17,7 @@ class RelayMotor(object):
             self.control_thread = threading.Thread(target=self.control_func)
             self.control_thread.start()
         except Exception as exc:
-            print "Error: unable to start thread - {0}".format(exc)
+            logging.error("Error: unable to start thread - {0}".format(exc))
 
     def control_func(self):
         try:
@@ -30,12 +31,12 @@ class RelayMotor(object):
                     self.off_func()
                     time.sleep(self.period - active_period)
         except Exception as exc:
-            print "Error: in control_thread - {0}".format(exc)
+            logging.error("Error: in control_thread - {0}".format(exc))
             traceback.print_exc()
 
     def set_throttle(self, throttle):
         with self.lock:
             if throttle < 0 or throttle > 1:
-                print "Error: Invalid throttle value"
+                logging.warning("Error: Invalid throttle value")
                 return
             self.throttle = float(throttle)

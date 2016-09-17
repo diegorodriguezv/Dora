@@ -104,7 +104,7 @@ class Dora(object):
     def input_timeout_func(self):
         timeout = 3
         triggered = False
-        print "Checking for input timeout: {} seconds".format(timeout)
+        logging.info( "Checking for input timeout: {} seconds".format(timeout))
         while self.alive:
             if time.time() - self.last_input > timeout:
                 if not triggered:
@@ -121,7 +121,7 @@ class Dora(object):
         hostname = "8.8.8.8"
         # hostname = "192.168.1.171"
         triggered = False
-        print "Checking connection to {}".format(hostname)
+        logging.info( "Checking connection to {}".format(hostname))
         while self.alive:
             if net.ping.check_ping_error(hostname):
                 if not triggered:
