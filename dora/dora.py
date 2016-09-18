@@ -152,8 +152,10 @@ class Dora(object):
 
 
 def convert_steering_to_2motors(throttle, steering):
-    difference = throttle * steering
+    difference = 1 * steering
     left, right = throttle - difference, throttle + difference
+    # if left > 1:
+    #     Todo: detect when steering surpasses max throttle, compensate reducing the opposing motor
     return left, right
 
 
