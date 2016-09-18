@@ -14,8 +14,8 @@ class Dora(object):
     alive = True
     last_input = time.time()
     last_zero_throttle = time.time()
-    saving_power = False
-    idle = False
+    saving_power = True
+    idle = True
     main_throttle = 0
     steering = 0
 

@@ -5,64 +5,24 @@ import time
 
 import traceback
 
-
-def joystick_button_func(self):
-    increment = .1
-    DPAD_U = 4
-    DPAD_D = 6
-    DPAD_L = 7
-    PS_BTN = 16
-    BTNPAD_U = 12
-    BTNPAD_R = 13
-    BTNPAD_D = 14
-    START = 3
-    try:
-        pygame.init()
-        j = pygame.joystick.Joystick(0)
-        j.init()
-        logging.info("Using: {}".format(j.get_name()))
-        button_history = [0 for button in range(j.get_numbuttons())]
-        while 1:
-            pygame.event.pump()
-            for button in range(0, j.get_numbuttons()):
-                if j.get_button(button) != 0:
-                    if not button_history[button]:
-                        was_recognized = True
-                        if button == DPAD_U:
-                            self.set_left_throttle(self.get_left_throttle() + increment)
-                        elif button == DPAD_D:
-                            self.set_left_throttle(self.get_left_throttle() - increment)
-                        elif button == DPAD_L:
-                            self.set_left_throttle(0)
-                        elif button == BTNPAD_U:
-                            self.set_right_throttle(self.get_right_throttle() + increment)
-                        elif button == BTNPAD_D:
-                            self.set_right_throttle(self.get_right_throttle() - increment)
-                        elif button == BTNPAD_R:
-                            self.set_right_throttle(0)
-                        elif button == START:
-                            logging.info("Your pressed joystick start button. Bye!".format(button))
-                            self.terminate()
-                        else:
-                            was_recognized = False
-                        if was_recognized:
-                            button_history[button] = True
-                        self.last_input = pygame.time.time()
-                        logging.info("throttle: {} - {}".format(self.get_left_throttle(), self.get_right_throttle()))
-                else:
-                    button_history[button] = 0
-    except Exception as exc:
-        logging.error("Error: in js_thread - {0}".format(exc))
-        traceback.print_exc()
+increment = .1
+DPAD_U = 4
+DPAD_D = 6
+DPAD_L = 7
+PS_BTN = 16
+BTNPAD_U = 12
+BTNPAD_R = 13
+BTNPAD_D = 14
+START = 3
+PS_BTN = 16
+START = 3
+AXIS_THROTTLE = 1
+AXIS_STEERING = 2
+AXIS_RES = -1.0
+zero_delta = 0.01
 
 
 def joystick_axis_func(period, actions):
-    PS_BTN = 16
-    START = 3
-    AXIS_THROTTLE = 1
-    AXIS_STEERING = 2
-    AXIS_RES = -1.0
-    zero_delta = 0.01
     try:
         pygame.init()
         j = pygame.joystick.Joystick(0)
@@ -90,6 +50,18 @@ def joystick_axis_func(period, actions):
             for button in range(0, j.get_numbuttons()):
                 if j.get_button(button) != 0:
                     if not button_history[button]:
+                        if button == DPAD_U:
+                            actions["set_left_throttle"](actions["get_left_throttle"]() + increment)
+                        elif button == DPAD_D:
+                            actions["set_left_throttle"](actions["get_left_throttle"]() - increment)
+                        elif button == DPAD_L:
+                            actions["set_left_throttle"](0)
+                        elif button == BTNPAD_U:
+                            actions["set_right_throttle"](actions["get_right_throttle"]() + increment)
+                        elif button == BTNPAD_D:
+                            actions["set_right_throttle"](actions["get_right_throttle"]() - increment)
+                        elif button == BTNPAD_R:
+                            actions["set_right_throttle"](0)
                         if button == START:
                             logging.info("Your pressed joystick start button. Bye!")
                             actions["terminate"]()
