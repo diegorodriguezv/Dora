@@ -45,8 +45,8 @@ class Dora(object):
         self.js_thread = threading.Thread(target=input.joystick.joystick_axis_func,
                                           args=[min(self.left_motor.period, self.right_motor.period), actions])
         self.js_thread.start()
-        self.ping_thread = threading.Thread(target=self.ping_func)
-        self.ping_thread.start()
+        # self.ping_thread = threading.Thread(target=self.ping_func)
+        # self.ping_thread.start()
         self.input_timeout_thread = threading.Thread(target=self.input_timeout_func)
         self.input_timeout_thread.start()
         self.save_energy_thread = threading.Thread(target=self.save_energy_func)
@@ -104,7 +104,7 @@ class Dora(object):
     def input_timeout_func(self):
         timeout = 3
         triggered = False
-        logging.info( "Checking for input timeout: {} seconds".format(timeout))
+        logging.info("Checking for input timeout: {} seconds".format(timeout))
         while self.alive:
             if time.time() - self.last_input > timeout:
                 if not triggered:
@@ -121,7 +121,7 @@ class Dora(object):
         hostname = "8.8.8.8"
         # hostname = "192.168.1.171"
         triggered = False
-        logging.info( "Checking connection to {}".format(hostname))
+        logging.info("Checking connection to {}".format(hostname))
         while self.alive:
             if net.ping.check_ping_error(hostname):
                 if not triggered:
@@ -152,10 +152,17 @@ class Dora(object):
 
 
 def convert_steering_to_2motors(throttle, steering):
-    difference = 1 * steering
+    difference = 1.0 * steering
     left, right = throttle - difference, throttle + difference
-    # if left > 1:
-    #     Todo: detect when steering surpasses max throttle, compensate reducing the opposing motor
+    # Detect when steering surpasses max throttle, compensate reducing the opposing motor (same with min)
+    if left > 1:
+        right += 1 - left
+    elif right > 1:
+        left += 1 - right
+    elif left < -1:
+        right += -1 - left
+    elif right < -1:
+        left += -1 - right
     return left, right
 
 
