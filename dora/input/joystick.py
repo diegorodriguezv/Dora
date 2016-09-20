@@ -1,4 +1,4 @@
-""""Yeah"""
+""""Handle joystick interaction. Uses a playstation 3 controller."""
 import logging
 import pygame
 import time
@@ -27,7 +27,7 @@ def joystick_axis_func(period, actions):
         pygame.init()
         j = pygame.joystick.Joystick(0)
         j.init()
-        logging.info("Joystick: {}".format(j.get_name()))
+        logging.info("oystick: {}".format(j.get_name()))
         button_history = [False for button in range(j.get_numbuttons())]
         axis_history = [0, 0]
         while 1:
@@ -46,7 +46,7 @@ def joystick_axis_func(period, actions):
                 axis_history[0] = ax_t_value
                 axis_history[1] = ax_s_value
                 logging.info(
-                    "throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]()))
+                    "Joystick axis:Throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]()))
             for button in range(0, j.get_numbuttons()):
                 if j.get_button(button) != 0:
                     if not button_history[button]:
@@ -67,7 +67,7 @@ def joystick_axis_func(period, actions):
                             actions["terminate"]()
                         button_history[button] = True
                         actions["input_recorded"]()
-                        logging.info("throttle: {} - {}".format(actions["get_left_throttle"](),
+                        logging.info("Joystick button: Throttle buttons: {} - {}".format(actions["get_left_throttle"](),
                                                                 actions["get_right_throttle"]()))
                 else:
                     button_history[button] = False
