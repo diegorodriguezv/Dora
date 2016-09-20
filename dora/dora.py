@@ -148,7 +148,7 @@ class Dora(object):
 
 
 def convert_steering_to_2motors(throttle, steering):
-    if throttle <= 0:
+    if throttle < 0:
         factor = -.4
     else:
         factor = .4
