@@ -39,7 +39,10 @@ class BidirectionalMotor(object):
 
     def set_throttle(self, throttle):
         with self.lock:
-            if throttle < -1 or throttle > 1:
-                logging.error("Error: Invalid throttle value")
-                return
+            if throttle < -1:
+                self.throttle = -1.0
+                logging.warning("Invalid throttle value")
+            elif throttle > 1:
+                self.throttle = 1.0
+                logging.warning("Invalid throttle value")
             self.throttle = float(throttle)
