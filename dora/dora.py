@@ -86,7 +86,7 @@ class Dora(object):
                 hw.motor.motors_power_signal_on()
                 logging.info("Not saving power")
                 self.saving_power = False
-                self.idle = False
+            self.idle = False
 
     def get_left_throttle(self):
         return self.left_motor.throttle
