@@ -7,7 +7,7 @@ def tui_func(actions):
     increment = .1
     try:
         while 1:
-            print "left = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C"
+            print "zero = Z - V   faster = Q - R   slower = A - F   full = W - E   full back = S - D   exit = X - C"
             inp = readchar.readkey().upper()
             print "You pressed {}".format(inp)
             actions["input_recorded"]()
@@ -36,7 +36,7 @@ def tui_func(actions):
                 actions["set_right_throttle"](-1)
             else:
                 logging.warning("Unrecognized input {}".format(inp))
-            logging.info("throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]()))
+            logging.info("Key:Throttle: {} - {}".format(actions["get_left_throttle"](), actions["get_right_throttle"]()))
     except Exception as exc:
         logging.error("Error: in tui_thread - {0}".format(exc))
         traceback.print_exc()

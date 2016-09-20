@@ -68,29 +68,24 @@ class Dora(object):
 
     def set_left_throttle(self, throttle):
         self.left_motor.set_throttle(throttle)
-        if throttle == 0 and self.right_motor.throttle == 0 and not self.idle:
-            self.last_zero_throttle = time.time()
-            self.idle = True
-            logging.info("Idle")
-        if throttle != 0:
-            if self.saving_power:
-                hw.motor.motors_power_signal_on()
-                logging.info("Not saving power")
-                self.saving_power = False
-            self.idle = False
+        self.power_saver()
 
     def set_right_throttle(self, throttle):
         self.right_motor.set_throttle(throttle)
-        if throttle == 0 and self.left_motor.throttle == 0 and not self.idle:
-            self.last_zero_throttle = time.time()
-            self.idle = True
-            logging.info("Idle")
-        if throttle != 0:
+        self.power_saver()
+
+    def power_saver(self):
+        if self.left_motor.throttle == 0 and self.right_motor.throttle == 0:
+            if not self.idle:
+                self.last_zero_throttle = time.time()
+                self.idle = True
+                logging.debug("Idle")
+        else:
             if self.saving_power:
                 hw.motor.motors_power_signal_on()
                 logging.info("Not saving power")
                 self.saving_power = False
-            self.idle = False
+                self.idle = False
 
     def get_left_throttle(self):
         return self.left_motor.throttle
