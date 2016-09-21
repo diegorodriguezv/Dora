@@ -68,11 +68,11 @@ class Dora(object):
         self.set_right_throttle(right)
 
     def set_left_throttle(self, throttle):
-        self.left_motor.set_throttle(throttle)
+        self.left_motor.throttle = throttle
         self.power_saver()
 
     def set_right_throttle(self, throttle):
-        self.right_motor.set_throttle(throttle)
+        self.right_motor.throttle = throttle
         self.power_saver()
 
     def power_saver(self):

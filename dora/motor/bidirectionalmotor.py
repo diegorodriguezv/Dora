@@ -14,7 +14,7 @@ class BidirectionalMotor(object):
         self.down_on_func = down_on_func
         self.down_off_func = down_off_func
         self.period = float(period)
-        self.throttle = 0.0
+        self._throttle = 0.0
         try:
             self.control_thread = threading.Thread(target=self.control_func)
             self.control_thread.start()
@@ -24,7 +24,7 @@ class BidirectionalMotor(object):
     def control_func(self):
         try:
             while self.alive:
-                current_throttle = self.throttle
+                current_throttle = self._throttle
                 active_period = abs(current_throttle) * self.period
                 if active_period != 0:
                     self.down_on_func() if current_throttle < 0 else self.up_on_func()
@@ -37,13 +37,18 @@ class BidirectionalMotor(object):
             logging.error("Error: in control_thread - {0}".format(exc))
             traceback.print_exc()
 
-    def set_throttle(self, throttle):
+    @property
+    def throttle(self):
+        return self._throttle
+
+    @throttle.setter
+    def throttle(self, t):
         with self.lock:
-            if throttle < -1:
-                self.throttle = -1
+            if t < -1:
+                self._throttle = -1
                 logging.info("Invalid throttle value")
-            elif throttle > 1:
-                self.throttle = 1
+            elif t > 1:
+                self._throttle = 1
                 logging.info("Invalid throttle value")
             else:
-                self.throttle = float(throttle)
+                self._throttle = float(t)

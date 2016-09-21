@@ -3,8 +3,6 @@ import logging
 import pygame
 import time
 
-import traceback
-
 increment = .1
 DPAD_U = 4
 DPAD_D = 6
@@ -45,7 +43,7 @@ def joystick_axis_func(period, actions):
                 actions["set_throttle_steering"](ax_t_value, ax_s_value)
                 axis_history[0] = ax_t_value
                 axis_history[1] = ax_s_value
-                logging.info(
+                logging.debug(
                     "Joystick axis:Throttle: {} - {}".format(actions["get_left_throttle"](),
                                                              actions["get_right_throttle"]()))
             for button in range(0, j.get_numbuttons()):
@@ -68,11 +66,10 @@ def joystick_axis_func(period, actions):
                             actions["terminate"]()
                         button_history[button] = True
                         actions["input_recorded"]()
-                        logging.info("Joystick button: Throttle buttons: {} - {}".format(actions["get_left_throttle"](),
-                                                                                         actions[
-                                                                                             "get_right_throttle"]()))
+                        logging.debug(
+                            "Joystick button: Throttle buttons: {} - {}".format(actions["get_left_throttle"](),
+                                                                                actions["get_right_throttle"]()))
                 else:
                     button_history[button] = False
     except Exception as exc:
         logging.error("Error: in js_thread - {0}".format(exc))
-        # traceback.print_exc()

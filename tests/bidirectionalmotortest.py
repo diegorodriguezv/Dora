@@ -76,7 +76,7 @@ class TestBidirectionalMotor(unittest.TestCase):
     def test_distribution(self, throttle=.0, cycles=5, delta=.12):
         logging.debug("{:f} start throttle:{:f}".format(0, throttle))
         self.start_time = time.time()
-        self.motor.set_throttle(throttle)
+        self.motor.throttle = throttle
         time.sleep(cycles * self.motor.period)
         now = time.time()
         elapsed = now - self.start_time
