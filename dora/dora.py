@@ -157,10 +157,10 @@ def convert_steering_to_2motors(throttle, steering):
     # Detect when steering surpasses max throttle, compensate reducing the opposing motor (same with min)
     if left > 1:
         right += 1 - left
-    elif right > 1:
-        left += 1 - right
     elif left < -1:
         right += -1 - left
+    if right > 1:
+        left += 1 - right
     elif right < -1:
         left += -1 - right
     return left, right
