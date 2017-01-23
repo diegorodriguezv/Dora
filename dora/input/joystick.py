@@ -1,4 +1,4 @@
-""""Handle joystick interaction. Uses a playstation 3 controller."""
+"""Handle joystick interaction. Uses a playstation 3 controller."""
 import logging
 import pygame
 import time
@@ -24,7 +24,7 @@ def joystick_axis_func(period, actions):
         j = pygame.joystick.Joystick(0)
         j.init()
         logging.info("Joystick: {}".format(j.get_name()))
-        button_history = [False for button in range(j.get_numbuttons())]
+        button_history = [False] * j.get_numbuttons()
         axis_history = [0, 0]
         while 1:
             pygame.event.pump()
