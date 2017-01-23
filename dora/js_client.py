@@ -1,5 +1,7 @@
 """Handle joystick interaction. Sends raw values via ADP."""
+import traceback
 import socket
+import errno
 import logging
 import threading
 import time
@@ -30,8 +32,13 @@ def read_socket():
                 logging.info("RTT {} ms  Drift {} ms".format(rttms, driftms))
             else:
                 time.sleep(.05)
+        except IOError as error:
+            if error.errno == errno.WSAECONNRESET:
+                logging.debug("Reconnecting")
+            else:
+                raise
         except Exception as exc:
-            logging.error("Problem reading response. {}".format(exc))
+            logging.error("Problem reading response. {}".format(traceback.format_exc()))
 
 
 try:
@@ -40,19 +47,19 @@ try:
     js.init()
     logging.info("Joystick: {}".format(js.get_name()))
 except Exception as exc:
-    logging.error("Unable to use joystick. {}".format(exc))
+    logging.error("Unable to use joystick. {}".format(traceback.format_exc()))
     exit(1)
 try:
     # SOCK_DGRAM is the socket type to use for UDP sockets
     socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 except Exception as exc:
-    logging.error("Unable to open socket. {}".format(exc))
+    logging.error("Unable to open socket. {}".format(traceback.format_exc()))
     exit(2)
 try:
     read_thread = threading.Thread(target=read_socket)
     read_thread.start()
 except Exception as exc:
-    logging.error("Unable to start reading thread. {}".format(exc))
+    logging.error("Unable to start reading thread. {}".format(traceback.format_exc()))
     exit(3)
 while True:
     try:
@@ -73,4 +80,4 @@ while True:
         logging.info("Sent: {} bytes".format(len(data)))
         logging.debug(str(status))
     except Exception as exc:
-        logging.error("Unable to send status. {0}".format(exc))
+        logging.error("Unable to send status. {0}".format(traceback.format_exc()))
