@@ -6,7 +6,7 @@ import threading
 import time
 import motor.bidirectionalmotor
 import hw.motor
-import input.joystick
+import input.remote_joystick
 import input.tui
 import net.ping
 
@@ -43,7 +43,9 @@ class Dora(object):
                    "set_throttle_steering": self.set_throttle_steering}
         self.tui_thread = threading.Thread(target=input.tui.tui_func, args=[actions])
         self.tui_thread.start()
-        self.js_thread = threading.Thread(target=input.joystick.joystick_axis_func,
+        self.js_server_thread = threading.Thread(target=input.remote_joystick.init_server)
+        self.js_server_thread.start()
+        self.js_thread = threading.Thread(target=input.remote_joystick.remote_joystick_func,
                                           args=[min(self.left_motor.period, self.right_motor.period), actions])
         self.js_thread.start()
         # self.ping_thread = threading.Thread(target=self.ping_func)

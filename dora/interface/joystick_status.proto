@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package dora;
+
+import "google/protobuf/timestamp.proto";
+
+message JoystickStatus {
+    google.protobuf.Timestamp sent = 1;
+    message Button {
+        bool pressed = 1;
+    }
+    repeated Button buttons = 2;
+    message Axis {
+        float value = 1;
+    }
+    repeated Axis axes = 3;
+}
+
+message JoystickAck {
+    google.protobuf.Timestamp sent = 1;
+    google.protobuf.Timestamp received = 2;
+}
