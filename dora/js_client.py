@@ -1,4 +1,5 @@
 """Handle joystick interaction. Sends raw values via ADP."""
+import atexit
 import traceback
 import socket
 import errno
@@ -11,12 +12,14 @@ import interface.joystick_status_pb2
 
 logging.getLogger().setLevel(logging.INFO)
 period = .1
-HOST, PORT = "localhost", 9999
+HOST, PORT = "dora", 9999
 ready_to_read = False
+reading_thread_alive = True
+sending_thread_alive = True
 
 
 def read_socket():
-    while True:
+    while reading_thread_alive:
         try:
             if ready_to_read:
                 received = socket.recv(1024)
@@ -27,9 +30,9 @@ def read_socket():
                 logging.debug(str(ack))
                 rtt = now - ack.sent.ToDatetime()
                 rttms = rtt.total_seconds() * 1000
-                drift = ack.received.ToDatetime() - ack.sent.ToDatetime()
-                driftms = drift.total_seconds() * 1000 - rttms / 2
-                logging.info("RTT {} ms  Drift {} ms".format(rttms, driftms))
+                diff = ack.received.ToDatetime() - ack.sent.ToDatetime()
+                diffms = diff.total_seconds() * 1000 - rttms / 2
+                logging.info("RTT {} ms  Time Difference {} ms".format(rttms, diffms))
             else:
                 time.sleep(.05)
         except IOError as error:
@@ -41,6 +44,14 @@ def read_socket():
             logging.error("Problem reading response. {}".format(traceback.format_exc()))
 
 
+def terminate():
+    global sending_thread_alive, reading_thread_alive
+    logging.info("Terminating...")
+    # sending_thread_alive = False
+    # reading_thread_alive = False
+    logging.info("Bye!")
+
+atexit.register(terminate)
 try:
     pygame.init()
     js = pygame.joystick.Joystick(0)
@@ -61,7 +72,7 @@ try:
 except Exception as exc:
     logging.error("Unable to start reading thread. {}".format(traceback.format_exc()))
     exit(3)
-while True:
+while sending_thread_alive:
     try:
         pygame.event.pump()
         time.sleep(period)
