@@ -75,7 +75,13 @@ def remote_joystick_func(period, actions):
 
 
 def init_server():
-    HOST, PORT = "localhost", 9999
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("gmail.com", 80))
+    # todo: improve ip finding method, currently it fails when no internet connection is available
+    HOST, PORT = str(s.getsockname()[0]), 9999
+    s.close()
+    # HOST, PORT = "192.168.1.239", 9999
     logging.info("Remote joystick server started {} port {}".format(HOST, PORT))
     server = SocketServer.UDPServer((HOST, PORT), RemoteJoystickUDPHandler)
     server.serve_forever()
