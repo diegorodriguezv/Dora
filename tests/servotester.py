@@ -6,10 +6,11 @@ import readchar
 # Don't use the raspberry pi in debug mode
 DEBUG_MODE = platform.linux_distribution()[0] != 'debian'
 if not DEBUG_MODE:
-    from RPIO import PWM
-
-    servo = PWM.Servo()
-
+    import pigpio
+    pi = pigpio.pi()
+    if not pi.connected:
+        print "pigpiod not running"
+        # exit(1)
     print "hardware on"
 else:
     print "no hardware to turn on"
@@ -44,7 +45,8 @@ while True:
                 print "bye!"
                 if not DEBUG_MODE:
                     for s in range(0, len(servos)):
-                        servo.stop_servo(servos[s])
+                        pi.set_servo_pulsewidth(servos[s], 0)
+                    pi.stop()
                 exit(0)
             except Exception:
                 print "Invalid input"
@@ -54,5 +56,8 @@ while True:
         duty_cycle = (pos + 90) / 180 * total_period + pulse_range[0]
         print "duty cycle: {}".format(duty_cycle)
         if not DEBUG_MODE:
-            servo.set_servo(servos[servo_num], duty_cycle * 1000)
+            if not pi.connected:
+                print "pigpiod not running"
+            else:
+                pi.set_servo_pulsewidth(servos[servo_num], duty_cycle * 1000)
 
