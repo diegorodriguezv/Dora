@@ -1,7 +1,7 @@
 """ Servotester lets you test a set of servos."""
 
-import platform
-import dora.motor.servo
+from context import dora
+from dora.motor.servo import Servo
 import dora.hw.servos
 
 # ask which servos to test ?
@@ -16,18 +16,17 @@ import dora.hw.servos
 #       loop
 #           set
 
-# pins 19
 pins = dora.hw.servos.pins
 servos = []
 i = 0
 for g in pins:
-    servos.append(dora.motor.servo.Servo(i, dora.hw.servos.signal_on, dora.hw.servos.signal_off))
+    servos.append(Servo(i, dora.hw.servos.signal_on, dora.hw.servos.signal_off))
     i += 1
 while True:
     for servo_num in range(0, len(pins)):
         while True:
             try:
-                inp = raw_input("position for servo: {} gpio: {}? ".format(servo_num, pins[servo_num]))
+                inp = raw_input("position for servo: {} pin: {}? ".format(servo_num, pins[servo_num]))
                 print "You entered {}".format(inp)
                 pos = float(inp)
                 if pos < -90 or pos > 90:
@@ -38,7 +37,7 @@ while True:
                 print "bye!"
                 for servo in servos:
                     servo.alive = False
-                dora.hw.servos.turn_off()
+                    dora.hw.servos.turn_off()
                 exit(0)
             except Exception:
                 print "Invalid input"
