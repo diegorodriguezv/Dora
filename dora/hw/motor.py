@@ -15,10 +15,10 @@ else:
 # 4: motor power system
 # gpio: 4, 17, 27, 22, 18
 PINS = [7, 11, 13, 15, 12]
+RIGHT_DOWN = 0
+RIGHT_UP = 1
 LEFT_UP = 2
 LEFT_DOWN = 3
-RIGHT_UP = 1
-RIGHT_DOWN = 0
 MOTOR_POWER = 4
 
 

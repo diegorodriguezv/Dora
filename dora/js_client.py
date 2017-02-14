@@ -13,10 +13,20 @@ import interface.joystick_status_pb2
 logging.getLogger().setLevel(logging.INFO)
 period = .1
 HOST, PORT = "dora", 9999
+# HOST, PORT = "localhost", 9999
+# todo: ask for the host
+# HOST, PORT = "192.168.1.239", 9999
 ready_to_read = False
 reading_thread_alive = True
 sending_thread_alive = True
-
+# todo: fix bug in linux ctrl-c won't return to console, impossible to kill
+# todo: survive joystick disconnects
+# todo: improve performance (cpu at 40%)... 20%
+# todo: survive network disconnects
+# todo: avg of rtt
+# todo: statistics, min, max, sent, received, bitrate, percentage lost
+# todo: print them nicely
+# todo: encrypt with aes
 
 def read_socket():
     while reading_thread_alive:
@@ -47,9 +57,10 @@ def read_socket():
 def terminate():
     global sending_thread_alive, reading_thread_alive
     logging.info("Terminating...")
-    # sending_thread_alive = False
-    # reading_thread_alive = False
+    sending_thread_alive = False
+    reading_thread_alive = False
     logging.info("Bye!")
+    exit(0)
 
 atexit.register(terminate)
 try:
