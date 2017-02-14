@@ -20,6 +20,9 @@ class Dora(object):
     main_throttle = 0
     steering = 0
 
+    # todo: add configuration files (ConfigParser)
+    # todo: stop when no js update in a certain period
+
     def __init__(self):
         atexit.register(self.terminate)
         logging.getLogger().setLevel(logging.INFO)
@@ -48,8 +51,6 @@ class Dora(object):
         self.js_thread = threading.Thread(target=input.remote_joystick.remote_joystick_func,
                                           args=[min(self.left_motor.period, self.right_motor.period), actions])
         self.js_thread.start()
-        # self.ping_thread = threading.Thread(target=self.ping_func)
-        # self.ping_thread.start()
         self.input_timeout_thread = threading.Thread(target=self.input_timeout_func)
         self.input_timeout_thread.start()
         self.save_energy_thread = threading.Thread(target=self.save_energy_func)
@@ -62,6 +63,7 @@ class Dora(object):
         self.left_motor.control_thread.join()
         self.right_motor.control_thread.join()
         hw.motor.turn_off()
+        # todo: stop and join remote joystick thread
         os._exit(0)
 
     def set_throttle_steering(self, main_throttle, steering):
