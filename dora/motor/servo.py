@@ -30,14 +30,24 @@ class Servo(object):
                               (self.pulse_range[1] - self.pulse_range[0]) + self.pulse_range[0]
                 if pulse_width != 0:
                     self.on_func(self.servo_idx)
-                time.sleep(pulse_width)
+                self.accurate_sleep(pulse_width)
                 inactive_period = self.period - pulse_width
                 if pulse_width != 0:
                     self.off_func(self.servo_idx)
-                time.sleep(inactive_period)
+                self.accurate_sleep(inactive_period)
         except Exception as exc:
             logging.error("Error: in control_thread - {0}".format(exc))
             traceback.print_exc()
+
+    def accurate_sleep(self, secs, granularity=0.0001):
+        """Provide an accurate sleep mechanism. Do normal sleep for some time and then do
+        busy-wait. The amount of time spent busy waiting is called granularity. It must be found
+        experimentally, since it will vary with architecture. Granularity should be as low as
+        possible to waste the least CPU but if it is too low it won't increase the accuracy."""
+        current_time = time.time()
+        time.sleep(secs - granularity)
+        while time.time() < current_time + secs:
+            pass
 
     @property
     def position(self):
