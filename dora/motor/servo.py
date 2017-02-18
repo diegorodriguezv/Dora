@@ -39,7 +39,7 @@ class Servo(object):
             logging.error("Error: in control_thread - {0}".format(exc))
             traceback.print_exc()
 
-    def accurate_sleep(self, secs, granularity=0.0001):
+    def accurate_sleep(self, secs, granularity=0.0002):
         """Provide an accurate sleep mechanism. Do normal sleep for some time and then do
         busy-wait. The amount of time spent busy waiting is called granularity. It must be found
         experimentally, since it will vary with architecture. Granularity should be as low as
