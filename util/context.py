@@ -1,7 +1,8 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+scriptpath = os.path.dirname(__file__)
+dorapath = os.path.abspath(os.path.join(scriptpath, os.path.pardir))
+sys.path.insert(0, dorapath)
 
 import dora
-
-#from .context import dora
