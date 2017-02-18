@@ -37,6 +37,7 @@ while True:
                 print "bye!"
                 for servo in servos:
                     servo.alive = False
+                    servo.control_thread.join()
                 dora.hw.servos.turn_off()
                 exit(0)
             except Exception:
