@@ -10,8 +10,8 @@ if not DEBUG_MODE:
 else:
     print "no hardware to turn on"
 
-# gpio 26
-pins = [37]
+# gpio 20,21
+pins = [38,40]
 
 
 def setup():
