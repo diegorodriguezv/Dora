@@ -49,7 +49,7 @@ class Gyroscope(object):
     alive = True
 
     def __init__(self):
-        exec_command("demo_dmp", ".")
+        exec_command("demo_dmp")
 
     @property
     def quat(self):
