@@ -14,7 +14,7 @@ class Servo(object):
         self.off_func = off_func
         self.period = float(period)
         self._pos = 0.0
-        self.pulse_range = [0.5/1000, 2.5/1000]  # s
+        self.pulse_range = [0.5 / 1000, 2.5 / 1000]  # s
         self.pos_range = [-90, 90]  # degrees
         try:
             self.control_thread = threading.Thread(target=self.control_func)
@@ -44,8 +44,8 @@ class Servo(object):
         busy-wait. The amount of time spent busy waiting is called granularity. It must be found
         experimentally, since it will vary with architecture. Granularity should be as low as
         possible to waste the least CPU but if it is too low it won't increase the accuracy.
-	In the Raspberry Pi 3 with Raspbian it seems to be 0.1ms. Every additional 0.1ms added to the 
-	granularity takes around 1% CPU time."""
+        In the Raspberry Pi 3 with Raspbian it seems to be 0.1ms. Every additional 0.1ms added to the
+        granularity takes around 1% CPU time."""
         current_time = time.time()
         time.sleep(secs - granularity)
         while time.time() < current_time + secs:
